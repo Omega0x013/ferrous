@@ -1,5 +1,5 @@
 bits 32
-global start, bios_interrupt
+global start, gdt_code
 extern main        ; Allow main() to be called from the assembly code
 extern start_ctors, end_ctors, start_dtors, end_dtors
  
