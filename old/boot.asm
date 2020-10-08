@@ -1,6 +1,6 @@
 bits 32
 global start, putc, clear_video
-extern boot        ; Allow main() to be called from the assembly code
+extern main        ; Allow main() to be called from the assembly code
 extern start_ctors, end_ctors, start_dtors, end_dtors
  
 MODULEALIGN        equ        1<<0
@@ -66,7 +66,7 @@ start:
 	popf
 
 	; call clear_video
-	call boot
+	call main
  
 static_dtors_loop:
    mov ebx, start_dtors
