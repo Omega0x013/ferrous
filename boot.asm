@@ -1,5 +1,5 @@
 bits 32
-global start, gdt_code
+global start, putc, clear_video
 extern main        ; Allow main() to be called from the assembly code
 extern start_ctors, end_ctors, start_dtors, end_dtors
  
@@ -48,7 +48,24 @@ start:
 	push ebx
 
 	; mov dword [0xb8000], 0x07690748
+
+	pushf
+	push eax
+	push edx
  
+	mov dx, 0x3D4
+	mov al, 0xA	; low cursor shape register
+	out dx, al
+ 
+	inc dx
+	mov al, 0x20	; bits 6-7 unused, bit 5 disables the cursor, bits 0-4 control the cursor shape
+	out dx, al
+ 
+	pop edx
+	pop eax
+	popf
+
+	; call clear_video
 	call main
  
 static_dtors_loop:
@@ -65,7 +82,29 @@ static_dtors_loop:
 cpuhalt:
 	   hlt
 	   jmp cpuhalt
+
+; void putc(character: u8, offset: u32)
+putc:
+	mov al, [ebp+4]
+	mov ebx, [ebp+8]
+	shl ebx, 1
+	add ebx, 0xb8000
+	mov byte [ebx], al
+	ret
 	
+clear_video:
+	mov eax, 0xb8000
+	mov ebx, 0x1F420F41
+	mov ecx, 0x3F442F43
+clear_video_loop:
+	mov dword [eax], ebx
+	add eax, 4
+	mov dword [eax], ecx
+	add eax, 4
+	cmp eax, 0xb8FFFF
+	jle clear_video_loop
+	ret
+
 section .bss
 align 32
  

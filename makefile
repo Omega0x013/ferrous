@@ -3,12 +3,12 @@ LD=ld
 RUSTC=rustc
 
 all:
-	$(NASM) -f elf64 -o boot.o boot.asm
+	$(NASM) -f elf -o boot.o boot.asm
 
-	$(RUSTC) main.rs -C overflow-checks=no --emit=obj
+	$(RUSTC) main.rs -C overflow-checks=no --emit=obj --target=i686-unknown-linux-gnu
 
-	$(LD) -melf_x86_64 -T linker.ld -o kernel.bin *.o
+	$(LD) -melf_i386 -T linker.ld -o kernel.bin *.o
 
 	rm *.o
 
-	qemu-system-x86_64 -kernel kernel.bin
+	qemu-system-i386 -kernel kernel.bin

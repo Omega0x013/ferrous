@@ -17,8 +17,16 @@ extern "C" fn eh_personality() {}
 #[start]
 fn main(_magic: u32, _addr: u32) {
     unsafe {
-        mem::vw(0, 0x62);
+    	clear_video();
+        // putc(0x61, 0);
+        *(0xb8000 as *mut u8) = 0x61;
     }
 }
 
 mod mem;
+
+#[allow(dead_code)]
+extern "C" {
+    fn putc(character: u8, offset: u32);
+	fn clear_video();
+}
