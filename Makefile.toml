@@ -1,0 +1,28 @@
+[tasks.default]
+alias = "build"
+
+[tasks.build]
+dependencies = ["compile", "objcopy"]
+clear = true
+
+[tasks.compile]
+command = "xargo"
+args = ["rustc", "--target=aarch64-unknown-none-softfloat", "--release", "--", "-C", "link-arg=-Tsrc/linker.ld"]
+
+[tasks.objcopy]
+command = "rust-objcopy"
+args = ["-Obinary", "target/aarch64-unknown-none-softfloat/release/ferrous", "kernel8.img"]
+
+# These need to be invoked directly
+
+[tasks.run]
+dependencies = ["build"]
+clear = true
+description = "Launch qemu emulation of the kernel"
+command = "qemu-system-aarch64"
+args = ["-M", "raspi3", "-kernel", "kernel8.img", "-serial", "stdio", "-display", "none"]
+
+[tasks.objdump]
+command = "rust-objdump"
+args = ["target/aarch64-unknown-none-softfloat/release/ferrous", "-xz"]
+
