@@ -5,6 +5,10 @@
 
 use core::panic::PanicInfo;
 
+#[no_mangle]
+#[link_section = ".text._start_arguments"]
+pub static BOOT_CORE_ID: u64 = 0;
+
 core::arch::global_asm!(
     include_str!("boot.s"),
     CONST_CORE_ID_MASK = const 0b11
